@@ -51,11 +51,16 @@ final class GenerateContentResponse {
 
   final UsageMetadata? usageMetadata;
 
+  final String modelVersion;
+  final String responseId;
+
   // TODO(natebosch): Change `promptFeedback` to a named argument.
   GenerateContentResponse(
     this.candidates,
     this.promptFeedback, {
     this.usageMetadata,
+    this.modelVersion = '',
+    this.responseId = '',
   });
 
   /// The text content of the text parts of the first of [candidates], if any.
@@ -629,8 +634,24 @@ GenerateContentResponse parseGenerateContentResponse(Object jsonObject) {
       _parseUsageMetadata(usageMetadata),
     _ => null,
   };
-  return GenerateContentResponse(candidates, promptFeedback,
-      usageMetadata: usageMedata);
+
+  final modelVersion = switch (jsonObject) {
+    {'modelVersion': final modelVersion?} => modelVersion.toString(),
+    _ => '',
+  };
+
+  final responseId = switch (jsonObject) {
+    {'responseId': final responseId?} => responseId.toString(),
+    _ => '',
+  };
+
+  return GenerateContentResponse(
+    candidates,
+    promptFeedback,
+    usageMetadata: usageMedata,
+    modelVersion: modelVersion,
+    responseId: responseId,
+  );
 }
 
 CountTokensResponse parseCountTokensResponse(Object jsonObject) {
