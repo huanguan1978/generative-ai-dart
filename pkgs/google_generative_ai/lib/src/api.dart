@@ -173,7 +173,7 @@ final class PromptFeedback {
 
 /// Metadata on the generation request's token usage.
 final class UsageMetadata {
-  /// Number of tokens in the prompt.
+  /// Number of tokens in the prompt. When cachedContent is set, this is still the total effective prompt size meaning this includes the number of tokens in the cached content.
   final int? promptTokenCount;
 
   /// Total number of tokens across the generated candidates.
@@ -185,11 +185,35 @@ final class UsageMetadata {
   /// number for tokens use thinking.
   final int? thoughtsTokenCount;
 
+  /// Number of tokens in the cached part of the prompt (the cached content)
+  final int? cachedContentTokenCount;
+
+  /// Number of tokens present in tool-use prompt(s)
+  final int? toolUsePromptTokenCount;
+
+  /// List of modalities that were processed in the request input.
+  final List<Map<String, dynamic>>? promptTokensDetails;
+
+  /// List of modalities of the cached content in the request input.
+  final List<Map<String, dynamic>>? cacheTokensDetails;
+
+  /// List of modalities that were returned in the response.
+  final List<Map<String, dynamic>>? candidatesTokensDetails;
+
+  /// List of modalities that were processed for tool-use request inputs.
+  final List<Map<String, dynamic>>? toolUsePromptTokensDetails;
+
   UsageMetadata({
     this.promptTokenCount,
     this.candidatesTokenCount,
     this.totalTokenCount,
     this.thoughtsTokenCount,
+    this.cachedContentTokenCount,
+    this.toolUsePromptTokenCount,
+    this.promptTokensDetails,
+    this.candidatesTokensDetails,
+    this.cacheTokensDetails,
+    this.toolUsePromptTokensDetails,
   });
 }
 
@@ -761,11 +785,52 @@ UsageMetadata _parseUsageMetadata(Object jsonObject) {
     {'thoughtsTokenCount': final int thoughtsTokenCount} => thoughtsTokenCount,
     _ => null,
   };
+  final cachedContentTokenCount = switch (jsonObject) {
+    {'cachedContentTokenCount': final int cachedContentTokenCount} =>
+      cachedContentTokenCount,
+    _ => null,
+  };
+  final toolUsePromptTokenCount = switch (jsonObject) {
+    {'toolUsePromptTokenCount': final int toolUsePromptTokenCount} =>
+      toolUsePromptTokenCount,
+    _ => null,
+  };
+
+  final promptTokensDetails = switch (jsonObject) {
+    {'promptTokensDetails': final List promptTokensDetails} =>
+      List<Map<String, dynamic>>.from(promptTokensDetails),
+    _ => null,
+  };
+
+  final candidatesTokensDetails = switch (jsonObject) {
+    {'candidatesTokensDetails': final List candidatesTokensDetails} =>
+      List<Map<String, dynamic>>.from(candidatesTokensDetails),
+    _ => null,
+  };
+
+  final cacheTokensDetails = switch (jsonObject) {
+    {'cacheTokensDetails': final List cacheTokensDetails} =>
+      List<Map<String, dynamic>>.from(cacheTokensDetails),
+    _ => null,
+  };
+
+  final toolUsePromptTokensDetails = switch (jsonObject) {
+    {'toolUsePromptTokensDetails': final List toolUsePromptTokensDetails} =>
+      List<Map<String, dynamic>>.from(toolUsePromptTokensDetails),
+    _ => null,
+  };
+
   return UsageMetadata(
     promptTokenCount: promptTokenCount,
     candidatesTokenCount: candidatesTokenCount,
     totalTokenCount: totalTokenCount,
     thoughtsTokenCount: thoughtsTokenCount,
+    toolUsePromptTokenCount: toolUsePromptTokenCount,
+    cachedContentTokenCount: cachedContentTokenCount,
+    promptTokensDetails: promptTokensDetails,
+    candidatesTokensDetails: candidatesTokensDetails,
+    cacheTokensDetails: cacheTokensDetails,
+    toolUsePromptTokensDetails: toolUsePromptTokensDetails,
   );
 }
 
