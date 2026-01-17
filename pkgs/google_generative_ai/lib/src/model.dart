@@ -340,7 +340,8 @@ final class GenerativeModel {
       if (toolConfig != null) 'toolConfig': toolConfig.toJson(),
       if (_systemInstruction case final systemInstruction?)
         'systemInstruction': systemInstruction.toJson(),
-      if (_cachedContent case final cachedContent?)
+      if (_cachedContent case final cachedContent?
+          when cachedContent.isNotEmpty)
         'cachedContent': cachedContent,
     };
   }
